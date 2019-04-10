@@ -1,4 +1,4 @@
-# SDK для интеграции функционала mPOS в мобильное приложение с проведением платежей через провайдера платежей [Assist!](https://www.assist.ru/)
+# SDK для интеграции функционала mPOS в мобильное приложение с проведением платежей через провайдера платежей [Assist](https://www.assist.ru/)
 
 ## Начальные требования
 Для получения возможности проведения оплаты через SDK необходимо обратиться в службу поддержки компании Ассист (support@assist.ru) для заведения магазина и пользователя в системе Ассист с необходимыми разрешениями.
@@ -6,7 +6,7 @@
 Для приема банковских карт понадобится считыватель карт, который также должен быть запрошен в компании Ассист.
 
 ### Требуемые разрешения:
-'''xml
+```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -15,10 +15,10 @@
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-'''
+```
 
 ### Требуемые зависимости:
-'''.gradle
+```.gradle
 //
 // Проект logback https://github.com/tony19/logback-android
 //
@@ -29,24 +29,24 @@ implementation "com.github.tony19:logback-android:1.3.0-3"
 // Gson
 //
 implementation "com.google.code.gson:gson:2.8.5"
-'''
+```
 
 ### Порядок интеграции SDK в приложение
 
 **Инициализируем магазин и пользователя**
 
-'''java
+```java
 AssistMerchant assistMerchant = new AssistMerchant();
 assistMerchant.setId("merchant_id");
 
 AssistUser assistUser = new AssistUser();
 assistUser.setLogin("user_login");
 assistUser.setPassword("user_password");
-'''
+```
 
 **Инициализируем платежное ядро SDK**
 
-'''java
+```java
 AssistPaymentEngine engine = AssistSDK.getPaymentEngine(Context context);
 // Тестовый или боевой сервер Ассист в зависимости от настроек магазина и пользователя
 engine.setServer("https://payments.t.paysecure.ru");
@@ -55,11 +55,11 @@ engine.setMerchant(assistMerchant);
 engine.setUser(assistUser);
 // Слушатель результата платежа
 engine.setPaymentListener(new PaymentListener());
-'''
+```
 
 **Инициализируем данные платежа**
 
-'''java
+```java
 AssistPaymentData paymentData = new AssistPaymentData(); 
 // Номер заказа
 paymentData.setOrderNumber(String.valueOf(System.currentTimeMillis()));
@@ -85,11 +85,11 @@ pd.setMobilePhone("+71234567890");
 pd.setPaymentAddress("Где-то далеко");
 // Способ фискализации оплаты
 pd.setFiscalDocumentGenerator(AssistPaymentData.FiscalDocumentGenerator.ASSIST);
-'''
+```
 
 **Инициализируем экземпляр класса для работы со считывателем банковских карт**
 
-'''java
+```java
 final AssistCardReader cardReader = AssistSDK.getCartReader(Context context);
 // Слушатель состояния подключения считывателя
 cardReader.setConnectionListener(new AssistCardReader.ConnectionListener() {
@@ -140,11 +140,11 @@ cardReader.setMessageListener(new AssistCardReader.MessageListener() {
         // Могут отсутствовать
     }
 });
-'''
+```
 
 **Пример слушателя результата платежа**
 
-'''java
+```java
 class PaymentListener implements PaymentEngineListener {
     @Override
     public void onPaymentFinished(long order_id) {
@@ -200,17 +200,17 @@ class PaymentListener implements PaymentEngineListener {
         // Отсутствует подключение к интернету.  Проведение платежа невозможно
     }
 }
-'''
+```
 
 **Запуск платежа наличными**
 
-'''java
+```java
 engine.payCash(someActivity, paymentData, new PaymentListener());
-'''
+```
 
 **Запрос статуса заказа**
 
-'''java
+```java
 engine.setPaymentStateListener(new StateListener());
 engine.getPaymentState(someActivity, order_id);
 
@@ -240,4 +240,4 @@ class StateListener implements PaymentStateListener {
         // Отсутствует подключение к интернету. Невозможно запросить статус заказа
     }
 }
-'''
+```
