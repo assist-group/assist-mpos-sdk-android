@@ -31,7 +31,7 @@ implementation "com.github.tony19:logback-android:1.3.0-3"
 implementation "com.google.code.gson:gson:2.8.5"
 ```
 
-### Пример файла конфигурации logback (располагается в папке assets модуля приложения)
+### Пример файла конфигурации logback.xml (располагается в папке assets модуля приложения)
 ```xml
 <configuration>
     <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
