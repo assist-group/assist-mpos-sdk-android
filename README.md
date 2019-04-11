@@ -31,10 +31,27 @@ implementation "com.github.tony19:logback-android:1.3.0-3"
 implementation "com.google.code.gson:gson:2.8.5"
 ```
 
+### Пример файла конфигурации logback (располагается в папке assets модуля приложения)
+```xml
+<configuration>
+    <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+        <tagEncoder>
+            <pattern>%logger{12}</pattern>
+        </tagEncoder>
+        <encoder>
+            <pattern>[%-10thread] %msg</pattern>
+        </encoder>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="logcat" />
+    </root>
+</configuration>
+```
+
 ### Порядок интеграции SDK в приложение
 
 **Инициализируем магазин и пользователя**
-
 ```java
 AssistMerchant assistMerchant = new AssistMerchant();
 assistMerchant.setId("merchant_id");
@@ -45,7 +62,6 @@ assistUser.setPassword("user_password");
 ```
 
 **Инициализируем платежное ядро SDK**
-
 ```java
 AssistPaymentEngine engine = AssistSDK.getPaymentEngine(Context context);
 // Тестовый или боевой сервер Ассист в зависимости от настроек магазина и пользователя
@@ -58,7 +74,6 @@ engine.setPaymentListener(new PaymentListener());
 ```
 
 **Инициализируем данные платежа**
-
 ```java
 AssistPaymentData paymentData = new AssistPaymentData(); 
 // Номер заказа
@@ -88,7 +103,6 @@ pd.setFiscalDocumentGenerator(AssistPaymentData.FiscalDocumentGenerator.ASSIST);
 ```
 
 **Инициализируем экземпляр класса для работы со считывателем банковских карт**
-
 ```java
 final AssistCardReader cardReader = AssistSDK.getCartReader(Context context);
 // Слушатель состояния подключения считывателя
@@ -143,7 +157,6 @@ cardReader.setMessageListener(new AssistCardReader.MessageListener() {
 ```
 
 **Пример слушателя результата платежа**
-
 ```java
 class PaymentListener implements PaymentEngineListener {
     @Override
@@ -203,13 +216,11 @@ class PaymentListener implements PaymentEngineListener {
 ```
 
 **Запуск платежа наличными**
-
 ```java
 engine.payCash(someActivity, paymentData, new PaymentListener());
 ```
 
 **Запрос статуса заказа**
-
 ```java
 engine.setPaymentStateListener(new StateListener());
 engine.getPaymentState(someActivity, order_id);
