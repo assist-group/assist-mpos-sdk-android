@@ -87,6 +87,13 @@ for (int i = 0; i < numOfItems; i++) {
     item.setQuantity("1");
     item.setPrice("1." + i);
     item.setTax(AssistPaymentTax.novat);
+	item.setDiscount("0.1");
+	item.setFPMode("4");
+	item.setUncode("12345");
+	//item.setEancode("");
+	//item.setGs1code("");
+	//item.setFurcode("");
+	//item.setEgaiscode("");
     items.add(item);
     pd.addChequeItem(item);
 }
