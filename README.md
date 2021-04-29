@@ -3,7 +3,7 @@
 ## Начальные требования
 Для получения возможности проведения оплаты через SDK необходимо обратиться в службу поддержки компании Ассист (support@assist.ru) для заведения магазина и пользователя в системе Ассист с необходимыми разрешениями.
 Полученные идентификатор магазина вместе с логином и паролем пользователя используются при вызове методов оплаты в SDK.
-Для приема банковских карт понадобится считыватель карт, который также должен быть запрошен в компании Ассист.
+Для приёма банковских карт понадобится считыватель карт, который также должен быть запрошен в компании Ассист.
 
 ### Требуемые разрешения:
 ```xml
@@ -22,13 +22,13 @@
 //
 // Проект logback https://github.com/tony19/logback-android
 //
-implementation "org.slf4j:slf4j-api:1.7.25"
+implementation "org.slf4j:slf4j-api:1.7.30"
 implementation "com.github.tony19:logback-android:1.3.0-3"
 
 //
 // Gson
 //
-implementation "com.google.code.gson:gson:2.8.5"
+implementation "com.google.code.gson:gson:2.8.6"
 ```
 
 ### Пример файла конфигурации logback.xml (располагается в папке assets модуля приложения)
@@ -61,7 +61,7 @@ assistUser.setLogin("user_login");
 assistUser.setPassword("user_password");
 ```
 
-**Инициализируем платежное ядро SDK**
+**Инициализируем платёжное ядро SDK**
 ```java
 AssistPaymentEngine engine = AssistSDK.getPaymentEngine(Context context);
 // Тестовый или боевой сервер Ассист в зависимости от настроек магазина и пользователя
@@ -86,28 +86,36 @@ for (int i = 0; i < numOfItems; i++) {
     item.setName("Item_" + i);
     item.setQuantity("1");
     item.setPrice("1." + i);
+    //item.setAmount("1." + i); // Если amount не указан, он рассчитывается автоматически как price*quantity
     item.setTax(AssistPaymentTax.novat);
-    item.setDiscount("0.1");
     item.setFPMode("4");
     item.setUncode("12345");
     //item.setEancode("");
     //item.setGs1code("");
     //item.setFurcode("");
     //item.setEgaiscode("");
+    //item.setSubjtype("");
     items.add(item);
-    pd.addChequeItem(item);
+    paymentData.addChequeItem(item);
 }
 // Сумма заказа
-pd.setOrderAmount(AssistChequeItem.getItemsTotal(items));
+paymentData.setOrderAmount(AssistChequeItem.getItemsTotal(items));
 // Валюта заказа (только "RUB")
-pd.setOrderCurrency("RUB");
+paymentData.setOrderCurrency("RUB");
 // Телефон покупателя (необязательно)
-pd.setMobilePhone("+71234567890");
-// Адрес расчета (необязательно)
-pd.setPaymentAddress("Где-то далеко");
+paymentData.setMobilePhone("+71234567890");
+// Адрес расчёта (необязательно)
+paymentData.setPaymentAddress("Где-то далеко");
+// Место расчёта (необязательно)
+paymentData.setPaymentPlace("Чуть ближе");
+// ФИО кассира (необязательно)
+paymentData.setCashier("Иванов И.И.");
 // Способ фискализации оплаты
-pd.setFiscalDocumentGenerator(AssistPaymentData.FiscalDocumentGenerator.ASSIST);
+paymentData.setFiscalDocumentGenerator(AssistPaymentData.FiscalDocumentGenerator.ASSIST);
 ```
+Описание и возможные значения полей позиции чека можно найти тут:  
+https://docs.assist.ru/pages/viewpage.action?pageId=5768298  
+Внимание: позиции в SDK поддерживают только те поля, которые представлены в примере выше.
 
 **Инициализируем экземпляр класса для работы со считывателем банковских карт**
 ```java
@@ -116,7 +124,7 @@ final AssistCardReader cardReader = AssistSDK.getCartReader(Context context);
 cardReader.setConnectionListener(new AssistCardReader.ConnectionListener() {
     @Override
     public void onConnected(AssistCardReader.ConnectionType connectionType) {
-        // Считываетль подключился, стартуем платеж
+        // Считываетль подключился, стартуем платёж
         engine.payWithCardReader(someActivity, paymentData, cardReader);
     }
 
@@ -134,13 +142,13 @@ cardReader.setConnectionListener(new AssistCardReader.ConnectionListener() {
 // Слушатель необходимых действий при обработке карты считывателем
 cardReader.setActionListener(new AssistCardReader.ActionListener() {
     @Override
-    public void onSelectApp(String[] strings) {
+    public void onSelectApp(String[] apps) {
         // Выбор приложения на карте
         // Можно не реализовать
     }
 
     @Override
-    public void onProvideCardholderSignature() {
+    public void onProvideCardholderSignature(String amount) {
         // Графическая подпись покупателя в виде Base64 строки с максимальной длиной 4000 символов и специальным префиксом
         // signatureBase64 = "data:image/png;base64," + Base64.encodeToString(signaturePngAsByteArray, Base64.NO_WRAP);
         // cardReader.onCustomerSignature(signatureBase64);
@@ -258,4 +266,76 @@ class StateListener implements PaymentStateListener {
         // Отсутствует подключение к интернету. Невозможно запросить статус заказа
     }
 }
+```
+### Отмена заказа
+
+**Инициализация данных для отмены**
+
+```java
+AssistCancelData cd = new AssistCancelData();
+cd.setOrderId(order_id);
+// Отмена может быть полная (на все позиции) и частичная (не на все позиции)
+cd.setItems(engine.getOrderNotCanceledItems(order_id));
+cd.setProvider(FiscalizationProvider.SERVER);
+//Необязательные параметры
+//cd.setCashier("");
+//cd.setPaymentAddress("");
+//cd.setPaymentPlace("");
+```
+
+**Инициализация слушателя результата отмены**
+
+```java
+engine.setPaymentCancelListener(new CancelListener());
+class CancelListener implements PaymentCancelListener {
+    @Override
+    public void onCanceled(long id) {
+        AssistOrderInfo orderInfo = engine.getOrderInfo(order_id);
+        Log.d("TAG", "Завершено со статусом: " + orderInfo.getOrderStateAsString());
+        // Полностью отменённые заказы должны иметь статус CANCELED
+        // Частично отменённые - PARTIAL_CANCELED
+    }
+
+    @Override
+    public void onCancelError(long order_id, String errorMessage) {
+        // Ошибка произошла во время отмены
+        AssistOrderInfo orderInfo = engine.getOrderInfo(order_id);
+        Log.d("TAG", "Завершено со статусом: " + orderInfo.getOrderStateAsString());
+        Log.d("TAG", "Ошибка: " + errorMessage);
+    }
+
+    @Override
+    public void onError(long order_id, String errorMessage) {
+        // Ошибка отмены заказа. Попробуйте обновить статус заказа, в случае неудачи обратитесь в тех. поддержку
+    }
+
+    @Override
+    public void onRegistrationError(String errorMessage) {
+        // Ошибка регистрации приложения в системе Ассист. Необходимо обращение в тех. поддержку
+    }
+
+    @Override
+    public void onNetworkInaccessible(String errorMessage) {
+        // Отсутствует подключение к интернету. Проведение платежа невозможно
+    }
+}
+```
+
+**Отмена заказа по карте**
+
+```java
+// На полную сумму
+engine.cancelPayment(someActivity, cancelData, cardReader)
+// Частичная, если требуется отменить не все позиции чека
+engine.cancelPaymentPartially(someActivity, cancelData, cardReader);
+```
+AssistCardReader необходимо инициализировать также, как при оплате
+
+**Отмена заказа наличными**
+
+```java
+// На полную сумму
+engine.cancelCash(someActivity, cancelData)
+// Частичная, если требуется отменить не все позиции чека
+engine.cancelCashPartially(someActivity, cancelData)
 ```
