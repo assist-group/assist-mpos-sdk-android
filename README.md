@@ -169,6 +169,12 @@ cardReader.setMessageListener(new AssistCardReader.MessageListener() {
         // Могут отсутствовать
     }
 });
+
+// Пинпад должен быть уже сопряжён по bluetooth
+//BluetoothAdapter.getDefaultAdapter().getBondedDevices(); // Возвращает список девайсов, откуда берём адрес и название пинпада
+// Bluepad-50 можно узнать по name, начинающемуся с букв "PP" 
+// Подключаемся к пинпаду
+cardReader.connectBluetooth(address, name);
 ```
 
 **Пример слушателя результата платежа**
