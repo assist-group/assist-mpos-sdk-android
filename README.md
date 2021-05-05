@@ -188,6 +188,8 @@ class PaymentListener implements PaymentEngineListener {
         AssistOrderInfo orderInfo = storage.getOrderInfo(order_id);
         Log.d("TAG", "Завершено со статусом: " + orderInfo.getOrderStateAsString());
         // Оплаченным является только заказ со статусом APPROVED!
+        // Для способа оплаты СБП необходимо отобразить QR-код
+        showQrToUser(orderInfo.getQrCodePlain()); // Ваш метод, который преобразует текст в QR-код
     }
 
     @Override
@@ -239,6 +241,13 @@ class PaymentListener implements PaymentEngineListener {
 **Запуск платежа наличными**
 ```java
 engine.payCash(someActivity, paymentData, new PaymentListener());
+```
+
+**Запуск платежа СБП**
+```java
+engine.payFastTransfer(someActivity, paymentData, new PaymentListener());
+// Далее необходимо отобразить QR-код для оплаты (см. PaymentListener)
+// После оплаты банковским приложением клиента проверяем статус заказа (см. ниже)
 ```
 
 **Запрос статуса заказа**
