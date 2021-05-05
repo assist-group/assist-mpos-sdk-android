@@ -29,6 +29,15 @@ implementation "com.github.tony19:logback-android:1.3.0-3"
 // Gson
 //
 implementation "com.google.code.gson:gson:2.8.6"
+
+//
+// Google Firebase
+//
+implementation platform("com.google.firebase:firebase-bom:25.12.0")
+implementation 'com.google.firebase:firebase-core'
+implementation 'com.google.firebase:firebase-analytics'
+implementation 'com.google.firebase:firebase-perf'
+implementation 'com.google.firebase:firebase-crashlytics'
 ```
 
 ### Пример файла конфигурации logback.xml (располагается в папке assets модуля приложения)
