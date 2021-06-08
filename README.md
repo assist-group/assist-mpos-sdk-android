@@ -104,6 +104,21 @@ for (int i = 0; i < numOfItems; i++) {
     //item.setFurcode("");
     //item.setEgaiscode("");
     //item.setSubjtype("");
+    //item.setAgentMode("2");
+    //item.setTransferOperatorPhone("123");
+    //item.setTransferOperatorName("Быстрые переводы");
+    //item.setTransferOperatorAddress("ул.Ленина, д.1");
+    //item.setTransferOperatorINN("123456789021");
+    //item.setPaymentReceiverOperatorPhone("89998887766");
+    //item.setPaymentAgentOperation("ttt");
+    //item.setPaymentAgentPhone("2667754");
+    //item.setSupplierPhone("255325-423");
+    //item.setSupplierName("ppooee");
+    //item.setSupplierINN("123456789033");
+    //item.setExcise("12.8");
+    //item.setCountryOfOrigin("rus");
+    //item.setNumberOfCustomsDeclaration("2");
+    //item.setLineAttribute("kkll");
     items.add(item);
     paymentData.addChequeItem(item);
 }
@@ -119,12 +134,43 @@ paymentData.setPaymentAddress("Где-то далеко");
 paymentData.setPaymentPlace("Чуть ближе");
 // ФИО кассира (необязательно)
 paymentData.setCashier("Иванов И.И.");
+// Серия/номер паспорта покупателя (необязательно)
+paymentData.setCustomerDocID("1234/222333");
+// ИНН кассира (необязательно)
+paymentData.setCashierINN("123456789011");
+// Признак агента - число от 0 до 6 (необязательно)
+paymentData.setPaymentAgentMode("2");
+// Телефон оператора по приёму платежей (необязательно)
+paymentData.setPaymentReceiverOperatorPhone("89998887766");
+// Телефон платёжного агента (необязательно)
+paymentData.setPaymentAgentPhone("89876543210");
+// Телефон поставщика (необязательно)
+paymentData.setSupplierPhone("345-66-77");
+// Дополнительный реквизит чека
+paymentData.setDocumentRequisite("info");
+// Номер автоматического устройства (необязательно)
+paymentData.setPaymentTerminal("123");
+// Телефон оператора перевода (необязательно)
+paymentData.setTransferOperatorPhone("222-333");
+// Наименование оператора перевода (необязательно)
+paymentData.setTransferOperatorName("Быстрые переводы");
+// Адрес оператора перевода (необязательно)
+paymentData.setTransferOperatorAddress("ул.Ленина, д.1");
+// ИНН оператора перевода (необязательно)
+paymentData.setTransferOperatorINN("123456789021");
+// Операция платёжного агента (необязательно)
+paymentData.setPaymentAgentOperation("");
+// Дополнительный реквизит пользователя (необязательно)
+paymentData.setUserRequisites("{\"name\":\"myreq\",\"value\":\"123\"");
+// Способ расчёта - число от 1 до 7 (необязательно)
+paymentData.setFpMode("4");
+// ИНН покупателя (необязательно)
+paymentData.setTaxpayerID("123456789012");
 // Способ фискализации оплаты
 paymentData.setFiscalDocumentGenerator(AssistPaymentData.FiscalDocumentGenerator.ASSIST);
 ```
 Описание и возможные значения полей позиции чека можно найти тут:  
 https://docs.assist.ru/pages/viewpage.action?pageId=5768298  
-Внимание: позиции в SDK поддерживают только те поля, которые представлены в примере выше.
 
 **Инициализируем экземпляр класса для работы со считывателем банковских карт**
 ```java
