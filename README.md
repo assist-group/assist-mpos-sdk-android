@@ -125,7 +125,7 @@ for (int i = 0; i < numOfItems; i++) {
 // Сумма заказа
 paymentData.setOrderAmount(AssistChequeItem.getItemsTotal(items));
 // Валюта заказа (только "RUB")
-paymentData.setOrderCurrency("RUB");
+paymentData.setOrderCurrency(AssistPaymentData.a.RUB);
 // Телефон покупателя (необязательно)
 paymentData.setMobilePhone("+71234567890");
 // Адрес расчёта (необязательно)
